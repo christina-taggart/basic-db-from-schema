@@ -71,6 +71,29 @@ class Contact < AddressBookObject
                   WHERE id='#{@id}'"
     }
   end
+
+  def save!
+    raise "Invalid phone number format" if !valid_phone?
+    raise "Invalid email format" if !valid_email?
+    raise "Email is not unique" if !unique_email?
+    super
+  end
+
+  def valid_phone?
+    @phone.match(/\A\d{3}-\d{3}-\d{4}\z/) ? true : false
+  end
+
+  def valid_email?
+    @email.match(/\A.*@.*\..*\z/) ? true : false
+  end
+
+  def unique_email?
+    if $db.execute("SELECT * FROM contacts WHERE email='#{@email}';") != []
+      false
+    elsif $db.execute("SELECT * FROM contacts WHERE email='#{@email}';") == []
+      true
+    end
+  end
 end
 
 
@@ -156,3 +179,15 @@ end
 #6. Adding ContactGroup
 # johns_group = ContactGroup.new({:id => 34, :contact_id => 4, :group_id => 2})
 # johns_group.save!
+
+# 7. Testing checks on invalid email/phone formats:
+# new_martha = Contact.new({
+#                     :id => 8,
+#                     :first_name => "Martha",
+#                     :last_name => "Smith",
+#                     :company => "Google",
+#                     :phone => "771-802220-1234",
+#                     :email => "martha@google.com"
+#                     })
+
+# new_martha.save!
