@@ -10,6 +10,24 @@ class Contact
     @phone = data[:phone]
     @created_at = data[:created_at]
     @updated_at = data[:updated_at]
+    raise_phone_error
+    raise_email_error
+  end
+
+  def not_valid_phone?
+    @phone.match(/^\d{3}.?\d{3}.?\d{4}$/) == nil
+  end
+
+  def raise_phone_error
+    raise "Phone not valid!" if not_valid_phone?
+  end
+
+  def not_valid_email?
+    @email.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i) == nil
+  end
+
+  def raise_email_error
+    raise "Email not valid!" if not_valid_email?
   end
 
   def add(database)
@@ -59,7 +77,7 @@ class Group
 end
 
 address_book = SQLite3::Database.new "address_book.db"
-andy = Contact.new(first_name: "Andy", last_name: "Lee", email: "email", phone: "123-456-2313",
+andy = Contact.new(first_name: "Andy", last_name: "Lee", email: "alee@gmail.com", phone: "123-456-2313",
   created_at: Time.now, updated_at: Time.now)
 #andy.add(address_book)
 #andy.delete(address_book)
@@ -68,3 +86,6 @@ andy = Contact.new(first_name: "Andy", last_name: "Lee", email: "email", phone: 
 dbc = Group.new("Family")
 #dbc.add(address_book)
 #dbc.delete(address_book)
+
+# christina = Contact.new(first_name: "Christina", last_name: "Taggart", email: "email", phone: "12a3asdf45asdfa2313",
+#   created_at: Time.now, updated_at: Time.now)
