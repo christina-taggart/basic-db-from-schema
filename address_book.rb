@@ -20,7 +20,12 @@ class Contact
   end
 
   def delete!
+    $db.execute("DELETE FROM contacts WHERE id='#{@id}';")
+    self.delete_matching_contact_groups
+  end
 
+  def delete_matching_contact_groups
+    $db.execute("DELETE FROM contacts_groups WHERE contact_id='#{@id}';")
   end
 
   def contact_exists?
@@ -71,6 +76,15 @@ class Group
     group_exists? ? self.update : self.insert
   end
 
+  def delete!
+    $db.execute("DELETE FROM groups WHERE id='#{@id}';")
+    self.delete_matching_contact_groups
+  end
+
+  def delete_matching_contact_groups
+    $db.execute("DELETE FROM contacts_groups WHERE group_id='#{@id}';")
+  end
+
   def group_exists?
     if $db.execute("SELECT * FROM groups WHERE id='#{@id}';") != []
       true
@@ -114,6 +128,10 @@ class ContactGroup
 
   def save!
     contact_group_exists? ? self.update : self.insert
+  end
+
+  def delete!
+    $db.execute("DELETE FROM contacts_groups WHERE id='#{@id}';")
   end
 
   def contact_group_exists?
@@ -170,6 +188,9 @@ bush.save!
 former_presidents = Group.new({:id => 3, :group_name => "Former Presidents"})
 
 
-#4. Updating a group:
+# 4. Updating a group:
 former_presidents.group_name = "Disliked Former Presidents"
 former_presidents.save!
+
+# 5. Deleting a contact:
+bush.delete!
