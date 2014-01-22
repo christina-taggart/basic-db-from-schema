@@ -28,7 +28,6 @@ class Contact
   end
 
    def self.update_record(database, attribute, value, id)
-
     database.execute("update contacts set #{attribute} = '#{value}' where id = #{id}")
   end
 
@@ -42,6 +41,21 @@ class Group
     @name = name
   end
 
+  def add(database)
+    database.execute(
+      <<-SQL
+        INSERT INTO groups
+          (name)
+        VALUES
+          ('#{name}');
+        SQL
+    )
+  end
+
+  def delete(database)
+    database.execute("delete from groups where name = '#{name}'")
+  end
+
 end
 
 address_book = SQLite3::Database.new "address_book.db"
@@ -49,4 +63,8 @@ andy = Contact.new(first_name: "Andy", last_name: "Lee", email: "email", phone: 
   created_at: Time.now, updated_at: Time.now)
 #andy.add(address_book)
 #andy.delete(address_book)
-Contact.update_record(address_book, "email", 'aleebc.edu', 5)
+#Contact.update_record(address_book, "email", 'aleebc.edu', 5)
+
+dbc = Group.new("Family")
+#dbc.add(address_book)
+#dbc.delete(address_book)
