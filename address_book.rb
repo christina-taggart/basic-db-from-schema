@@ -7,6 +7,7 @@ class Contact
   attr_accessor :first_name, :last_name, :company, :phone, :email
 
   def initialize(args)
+    @id = args[:id]
     @first_name = args[:first_name]
     @last_name = args[:last_name]
     @company = args[:company]
@@ -15,12 +16,39 @@ class Contact
   end
 
   def save!
+    contact_exists? ? self.update : self.insert
+  end
+
+  def contact_exists?
+    if $db.execute("SELECT * FROM contacts WHERE id='#{@id}';") != []
+      true
+    elsif $db.execute("SELECT * FROM contacts WHERE id='#{@id}';") == []
+      false
+    end
+  end
+
+  def insert
     $db.execute(
       <<-SQL
       INSERT INTO contacts
-        (first_name, last_name, company, phone, email)
+        (id, first_name, last_name, company, phone, email)
       VALUES
-        ('#{@first_name}', '#{@last_name}', '#{@company}', '#{@phone}', '#{@email}');
+        ('#{@id}','#{@first_name}', '#{@last_name}', '#{@company}', '#{@phone}', '#{@email}');
+      SQL
+    )
+  end
+
+  def update
+    $db.execute(
+      <<-SQL
+      UPDATE contacts SET
+        id = '#{@id}',
+        first_name = '#{@first_name}',
+        last_name = '#{@last_name}',
+        company = '#{@company}',
+        phone = '#{@phone}',
+        email = '#{@email}'
+      WHERE id='#{@id}'
       SQL
     )
   end
@@ -70,24 +98,17 @@ end
 
 #-----DRIVERS-----
 
-# # Adding Spencer to Contacts
-# spencer = Contact.new({
-#                       :first_name => "Spencer",
-#                       :last_name => "Smitherman",
-#                       :company => "Uber",
-#                       :phone => "123-678-3242",
-#                       :email => "spencer@uber.com"
-#                       })
-# spencer.save!
+# # 1. Adding George Bush:
+bush = Contact.new({
+                  :id => 6,
+                  :first_name => "George",
+                  :last_name => "Bush",
+                  :company => "America",
+                  :phone => "1-800-1234",
+                  :email => "george@bush.gov"
+                  })
 
-# # Adding Spencer to the DBC group:
-# spencers_group = ContactGroup.new({:contact_id => 5, :group_id => 1})
-# spencers_group.save!
 
-# # Adding new Magical Beings group:
-# magic_beings = Group.new({:group_name => "Magical beings"})
-# magic_beings.save!
-
-# # Adding Mary Poppins to Magical beings group:
-# marys_group = ContactGroup.new({:contact_id => 2, :group_id => 2})
-# marys_group.save!
+# 2. Updating George Bush:
+bush.first_name = "Martha"
+bush.save!
