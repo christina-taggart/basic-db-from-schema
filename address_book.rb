@@ -4,7 +4,7 @@ $db = SQLite3::Database.open "address_book.db"
 
 
 class Contact
-  attr_accessor :first_name, :last_name, :company, :phone, :email
+  attr_accessor :id, :first_name, :last_name, :company, :phone, :email
 
   def initialize(args)
     @id = args[:id]
@@ -17,6 +17,10 @@ class Contact
 
   def save!
     contact_exists? ? self.update : self.insert
+  end
+
+  def delete!
+
   end
 
   def contact_exists?
@@ -56,19 +60,43 @@ end
 
 
 class Group
-  attr_accessor :group_name
+  attr_accessor :id, :group_name
 
   def initialize(args)
+    @id = args[:id]
     @group_name = args[:group_name]
   end
 
   def save!
+    group_exists? ? self.update : self.insert
+  end
+
+  def group_exists?
+    if $db.execute("SELECT * FROM groups WHERE id='#{@id}';") != []
+      true
+    elsif $db.execute("SELECT * FROM groups WHERE id='#{@id}';") == []
+      false
+    end
+  end
+
+  def insert
     $db.execute(
       <<-SQL
       INSERT INTO groups
-        (group_name)
+        (id, group_name)
       VALUES
-        ('#{@group_name}');
+        ('#{@id}','#{@group_name}');
+      SQL
+    )
+  end
+
+  def update
+    $db.execute(
+      <<-SQL
+      UPDATE groups SET
+        id = '#{@id}',
+        group_name = '#{@group_name}'
+      WHERE id='#{@id}'
       SQL
     )
   end
@@ -76,20 +104,45 @@ end
 
 
 class ContactGroup
-  attr_accessor :contact_id, :group_id
+  attr_accessor :id, :contact_id, :group_id
 
   def initialize(args)
+    @id = args[:id]
     @contact_id = args[:contact_id]
     @group_id = args[:group_id]
   end
 
   def save!
+    contact_group_exists? ? self.update : self.insert
+  end
+
+  def contact_group_exists?
+    if $db.execute("SELECT * FROM contacts_groups WHERE id='#{@id}';") != []
+      true
+    elsif $db.execute("SELECT * FROM contacts_groups WHERE id='#{@id}';") == []
+      false
+    end
+  end
+
+  def insert
     $db.execute(
       <<-SQL
       INSERT INTO contacts_groups
-        (contact_id, group_id)
+        (id, contact_id, group_id)
       VALUES
-        ('#{@contact_id}', '#{@group_id}');
+        ('#{@id}', '#{contact_id}', '#{@group_id}');
+      SQL
+    )
+  end
+
+  def update
+    $db.execute(
+      <<-SQL
+      UPDATE groups SET
+        id = '#{@id}',
+        contact_id = '#{contact_id}',
+        group_id = '#{@group_id}'
+      WHERE id='#{@id}'
       SQL
     )
   end
@@ -112,3 +165,11 @@ bush = Contact.new({
 # 2. Updating George Bush:
 bush.first_name = "Martha"
 bush.save!
+
+# 3. Adding a group Former Presidents:
+former_presidents = Group.new({:id => 3, :group_name => "Former Presidents"})
+
+
+#4. Updating a group:
+former_presidents.group_name = "Disliked Former Presidents"
+former_presidents.save!
