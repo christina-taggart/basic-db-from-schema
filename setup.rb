@@ -72,23 +72,42 @@ class Contacts
     )
   end
 
-  def add_to_group(group)
+  def update(column, value, location)
+    $db.execute("UPDATE contacts SET #{column} = #{value} WHERE #{location}")
   end
-  def change_contact_address
-  end
+
   def delete(id)
+    $db.execute("DELETE FROM contacts WHERE id = #{id}")
+  end
+
+end
+
+class Groups
+  def initialize(args)
+    @name = args[:name]
+  end
+
+  def add
     $db.execute(
       <<-SQL
-      DELETE FROM contacts
-      WHERE id = "#{id}"
-    SQL
+        INSERT INTO groups
+          (name, created_at, updated_at)
+        VALUES
+          ("#{@name}", DATETIME('now'), DATETIME('now'))
+      SQL
     )
   end
-  def delete_group(group)
+
+  def delete_group(id)
+    $db.execute("DELETE FROM groups WHERE id = #{id}")
   end
 end
 
-bobby = Contacts.new({first_name: 'bobby', last_name: 'fischer', company: 'chess exiled', phone_number: '11111111', email: 'ilovechess@chessmaster.com'})
+bobby = Contacts.new({first_name: 'bobby', last_name: 'fischer', company: 'chess exiled', phone_number: '111-111-1111', email: 'ilovechess@chessmaster.com', })
+#bobby.update("company", "'chessterplex'", 3)
+chess_masters = Groups.new({name: 'chess_players_suck'})
+#chess_masters.add
 #bobby.add
-#bobby.delete(1)
+#bobby.delete(4)
+chess_masters.delete_group(2)
 
