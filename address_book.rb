@@ -34,9 +34,9 @@ class Contact
       $db.execute(
         <<-SQL
           INSERT INTO contacts
-            (first_name, last_name, company, phone, email, created_at, updated_at)
+            (id, first_name, last_name, company, phone, email, created_at, updated_at)
           VALUES
-            ('#{@first_name}','#{@last_name}','#{@company}','#{@phone}', '#{@email}', '#{@created_at}', DATETIME('now'));
+            ('#{@id}', '#{@first_name}','#{@last_name}','#{@company}','#{@phone}', '#{@email}', '#{@created_at}', DATETIME('now'));
         SQL
       )
     end
@@ -64,5 +64,6 @@ end
 
 thor = Contact.new({first_name: "Chris"})
 thor.save
+p thor.exists?
 thor.first_name = "Donald"
 thor.save

@@ -6,7 +6,7 @@ module AddressBookDB
     $db.execute(
       <<-SQL
         CREATE TABLE contacts (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY,
           first_name VARCHAR(64) NOT NULL,
           last_name VARCHAR(64),
           company VARCHAR(64),
@@ -41,11 +41,11 @@ module AddressBookDB
     $db.execute(
       <<-SQL
         INSERT INTO contacts
-          (first_name, last_name, company, phone, email, created_at, updated_at)
+          (id, first_name, last_name, company, phone, email, created_at, updated_at)
         VALUES
-          ('Brick','Thornton','Dev Bootcamp','555-555-1234', 'brick@dbc.com', DATETIME('now'), DATETIME('now')),
-          ('Roy','Lee',NULL,'555-555-0167', 'royleebiv@gmail.com', DATETIME('now'), DATETIME('now')),
-          ('Patrick','Vilhena',NULL,'555-555-2057', 'plvilhena@gmail.com', DATETIME('now'), DATETIME('now'));
+          (1,'Brick','Thornton','Dev Bootcamp','555-555-1234', 'brick@dbc.com', DATETIME('now'), DATETIME('now')),
+          (2,'Roy','Lee',NULL,'555-555-0167', 'royleebiv@gmail.com', DATETIME('now'), DATETIME('now')),
+          (3,'Patrick','Vilhena',NULL,'555-555-2057', 'plvilhena@gmail.com', DATETIME('now'), DATETIME('now'));
           SQL
           )
     $db.execute(
