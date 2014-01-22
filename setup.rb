@@ -19,6 +19,7 @@ module AddressBooksDB
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           first_name VARCHAR(64) NOT NULL,
           last_name VARCHAR(64) NOT NULL,
+          company VARCHAR(64) NOT NULL,
           phone_number VARCHAR(64) NOT NULL,
           email VARCHAR(64) NOT NULL,
           created_at VARCHAR(64) NOT NULL,
@@ -39,7 +40,7 @@ module AddressBooksDB
     $db.execute(
       <<-SQL
         CREATE TABLE contact_groups (
-          id INTEGER PRIMARY KEY AUTOINCREMENT
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
           group_id INTEGER,
           contact_id INTEGER,
           FOREIGN KEY (group_id) REFERENCES groups(id),
@@ -48,7 +49,46 @@ module AddressBooksDB
       SQL
       )
   end
-  def self.seed
-    # stuff goes here....
+end
+
+
+class Contacts
+  def initialize(args)
+    @first_name = args[:first_name]
+    @last_name = args[:last_name]
+    @company = args[:company]
+    @phone_number = args[:phone_number]
+    @email = args[:email]
+  end
+
+  def add
+    $db.execute(
+      <<-SQL
+        INSERT INTO contacts
+          (first_name, last_name, company, phone_number, email, created_at, updated_at)
+        VALUES
+          ("#{@first_name}", "#{@last_name}", "#{@company}", "#{@phone_number}", "#{@email}", DATETIME('now'), DATETIME('now'))
+      SQL
+    )
+  end
+
+  def add_to_group(group)
+  end
+  def change_contact_address
+  end
+  def delete(id)
+    $db.execute(
+      <<-SQL
+      DELETE FROM contacts
+      WHERE id = "#{id}"
+    SQL
+    )
+  end
+  def delete_group(group)
   end
 end
+
+bobby = Contacts.new({first_name: 'bobby', last_name: 'fischer', company: 'chess exiled', phone_number: '11111111', email: 'ilovechess@chessmaster.com'})
+#bobby.add
+#bobby.delete(1)
+
