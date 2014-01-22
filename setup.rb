@@ -51,7 +51,6 @@ module AddressBooksDB
   end
 end
 
-
 class Contacts
   def initialize(args)
     @first_name = args[:first_name]
@@ -59,6 +58,8 @@ class Contacts
     @company = args[:company]
     @phone_number = args[:phone_number]
     @email = args[:email]
+    raise "Phone number must be formatted like so: XXX-XXX-XXXX" if @phone_number.match(/(\d{3}-\d{3}-\d{4})$/) == nil
+    raise "Please enter a valid e-mail address!" if @email.match(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/) == nil # <=== Had to use someone else's Regex...
   end
 
   def add
@@ -103,11 +104,11 @@ class Groups
   end
 end
 
-bobby = Contacts.new({first_name: 'bobby', last_name: 'fischer', company: 'chess exiled', phone_number: '111-111-1111', email: 'ilovechess@chessmaster.com', })
+bobby = Contacts.new({first_name: 'Johnny', last_name: 'fischer', company: 'chess exiled', phone_number: '113-123-1441', email: 'ilovechess@chessmaster', })
 #bobby.update("company", "'chessterplex'", 3)
 chess_masters = Groups.new({name: 'chess_players_suck'})
 #chess_masters.add
-#bobby.add
-#bobby.delete(4)
-chess_masters.delete_group(2)
+bobby.add
+bobby.delete(7)
+#chess_masters.delete_group(2)
 
